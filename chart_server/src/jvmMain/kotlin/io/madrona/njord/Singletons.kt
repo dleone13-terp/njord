@@ -16,6 +16,7 @@ import io.madrona.njord.layers.LayerFactory
 import io.madrona.njord.model.ColorLibrary
 import io.madrona.njord.util.SpriteSheet
 import io.madrona.njord.util.ZFinder
+import org.flywaydb.core.Flyway
 import org.gdal.osr.SpatialReference
 import org.locationtech.jts.geom.GeometryFactory
 import java.util.concurrent.TimeUnit
@@ -49,6 +50,30 @@ object Singletons {
         hc.connectionTimeout = 120000
         hc.leakDetectionThreshold = 300000
         HikariDataSource(hc)
+    }
+
+    /**
+     * Flyway database migration manager.
+     * Runs migrations automatically when accessed, ensuring database schema is up to date.
+     */
+    private val flyway: Flyway by lazy {
+        Flyway.configure()
+            .dataSource(ds)
+            .locations("classpath:db/migration")
+            .baselineOnMigrate(true) // Allow migration on existing databases
+            .baselineVersion("0") // Start from version 0 (PostGIS extensions)
+            .validateOnMigrate(true)
+            .load()
+    }
+
+    /**
+     * Initialize database migrations.
+     * This should be called early in application startup to ensure schema is ready.
+     */
+    fun initDatabase() {
+        genLog.info("Running database migrations...")
+        val result = flyway.migrate()
+        genLog.info("Database migrations complete. Applied ${result.migrationsExecuted} migrations.")
     }
 
     val colorLibrary by lazy { ColorLibrary() }

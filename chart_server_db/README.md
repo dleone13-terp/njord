@@ -1,4 +1,8 @@
 # Local Dev
+
+Database migrations are now handled automatically by Flyway within the chart_server application.
+When you run the chart_server, Flyway will automatically create the necessary schema.
+
 * url = `jdbc:postgresql://localhost:5432/s57server`
 * username = `admin`
 * password = `mysecretpassword`
@@ -19,6 +23,7 @@ kubectl -n "$ns" port-forward "$pod" 5432:5432
 docker run -p 11211:11211 memcached:1.6 memcached -I 128m -m 512
 ```
 
+Then run the chart server (migrations will run automatically):
 ```shell
 ./gradlew :chart_server:run
 ```

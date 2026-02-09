@@ -112,6 +112,8 @@ kotlin {
                 implementation("org.locationtech.jts:jts-core:1.19.0")
                 implementation("org.postgresql:postgresql:42.7.3")
                 implementation("com.zaxxer:HikariCP:5.0.1")
+                implementation("org.flywaydb:flyway-core:10.21.0")
+                implementation("org.flywaydb:flyway-database-postgresql:10.21.0")
                 implementation("io.ktor:ktor-server-metrics:$ktorVersion")
                 implementation("io.dropwizard.metrics:metrics-core:4.2.30")
                 implementation("io.dropwizard.metrics:metrics-jmx:4.2.30")

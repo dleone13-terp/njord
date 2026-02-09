@@ -35,6 +35,9 @@ class ChartServerApp {
 }
 
 fun main() {
+    // Initialize database migrations before starting the server
+    Singletons.genLog = org.slf4j.LoggerFactory.getLogger("njord")
+    Singletons.initDatabase()
     ChartServerApp().serve()
 }
 
