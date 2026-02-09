@@ -44,15 +44,17 @@ kubectl -n njord logs $(kubectl get pods -n njord -l app=njord-postgis-svc -o js
 kubectl -n njord describe deployment njord-postgis
 ```
 
-### Legacy: Manual PostGIS Extension Setup (if needed)
+### RDS and PostGIS Extensions
 
-If you need to manually set up PostGIS extensions (e.g., on a fresh RDS instance), you can run:
-```shell
-kubectl run -n njord postgis-setup --rm -i --restart=Never --image=postgres:13 -- \
-  psql -h njord-postgis-svc.njord.svc.cluster.local -U admin -d s57server \
-  -c "CREATE EXTENSION IF NOT EXISTS postgis; \
-      CREATE EXTENSION IF NOT EXISTS postgis_raster; \
-      CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;"
-```
+Flyway migration V0__postgis_extensions.sql automatically handles PostGIS extension setup on **all** PostgreSQL environments including:
+- AWS RDS for PostgreSQL
+- Local PostgreSQL with PostGIS
+- Docker containers (postgis/postgis image)
+- Self-managed PostgreSQL servers
 
-Otherwise, Flyway migration V0__postgis_extensions.sql will handle this automatically.
+The migration includes proper error handling for RDS permission restrictions and will:
+- Create extensions using `CREATE EXTENSION IF NOT EXISTS` (safe and idempotent)
+- Handle schema ownership gracefully (skips if insufficient privileges)
+- Work with any PostgreSQL user that has extension creation rights
+
+**No manual setup is needed** - Flyway handles everything on first application startup.
